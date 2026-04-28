@@ -134,27 +134,29 @@ class LinkedList {
     }
 
     getNodeStartX() {
-        return this.x + getCellWidth(this.label) + boxSize + nodeDistX + 15;
+        return this.x + boxSize + nodeDistX + 15;
     }
 
     draw() {
-        const headCellWidth = getCellWidth(this.label)
+        const ink = bwMode ? 0 : 255
+        const [cr, cg, cb] = bwMode ? [255, 255, 255] : this.color
 
-        //BOXES
+        // Label above pointer cell
+        noStroke()
+        fill(ink)
+        text(this.label, this.x + boxSize / 2, this.y - 10)
+
+        // Pointer cell only (label cell hidden)
         strokeWeight(1)
         stroke(28, 42, 53)
-        fill(this.color[0], this.color[1], this.color[2])
-        rect(this.x + headCellWidth / 2, this.y + boxSize / 2, headCellWidth, boxSize)
-        rect(this.x + headCellWidth + boxSize / 2, this.y + boxSize / 2, boxSize, boxSize)
-        noStroke()
-        fill(255)
-        text(this.label, this.x + headCellWidth / 2, this.y + boxSize / 2)
+        fill(cr, cg, cb)
+        rect(this.x + boxSize / 2, this.y + boxSize / 2, boxSize, boxSize)
 
         //LINE
         if (this.head != null) {
-            stroke(WHITE)
-            fill(WHITE)
-            const startX = this.x + headCellWidth + boxSize
+            stroke(ink)
+            fill(ink)
+            const startX = this.x + boxSize
             const startY = this.y + this.offsetY
             const endX = this.head.x
             const endY = this.head.y + this.offsetY
@@ -415,15 +417,33 @@ class Node {
     }
     async draw() {
         const dataCellWidth = getCellWidth(this.value)
+        const ink = bwMode ? 0 : 255
+        const [cr, cg, cb] = bwMode ? [255, 255, 255] : this.color
+
+        // Labels above cells
+        noStroke()
+        fill(ink)
+        textSize(10)
+        text("data", this.x + dataCellWidth / 2, this.y - 10)
+        text("next", this.x + dataCellWidth + boxSize / 2, this.y - 10)
+        textSize(12)
 
         strokeWeight(1)
         stroke(28, 42, 53)
-        fill(this.color[0], this.color[1], this.color[2])
+        fill(cr, cg, cb)
         rect(this.x + dataCellWidth / 2, this.y + boxSize / 2, dataCellWidth, boxSize)
         rect(this.x + dataCellWidth + boxSize / 2, this.y + boxSize / 2, boxSize, boxSize)
         noStroke()
-        fill(255)
+        fill(ink)
         text(this.value, this.x + dataCellWidth / 2, this.y + boxSize / 2)
+
+        if (this.next == null) {
+            noStroke()
+            fill(ink)
+            textSize(10)
+            text("null", this.x + dataCellWidth + boxSize / 2, this.y + boxSize / 2)
+            textSize(12)
+        }
 
         if (this.next != null) {
             // console.log(this.endx == this.next.x)
@@ -438,8 +458,8 @@ class Node {
                 this.endy = this.next.y
             }
 
-            stroke(WHITE)
-            fill(WHITE)
+            stroke(ink)
+            fill(ink)
             const startX = this.x + dataCellWidth + boxSize
             const startY = this.y + this.offsetY
             const endX = this.endx
@@ -553,7 +573,7 @@ function enableButtonControls() {
     for (button of buttonControls) {
         button.disabled = false
     }
-    statusText = "Standby"
+    statusText = ""
 }
 
 document.getElementById("animSlider").innerHTML = document.getElementById("myRange").value
@@ -707,11 +727,18 @@ async function handleDeleteAtIndex() {
     enableButtonControls()
 }
 
+var bwMode = false
+
+function handleBwToggle() {
+    bwMode = !bwMode
+    document.getElementById("bwToggleBtn").textContent = bwMode ? "Color" : "B&W"
+}
+
 var linkedLists = []
 var iNode = new indexNode()
 var sNode
 
-var statusText = "Standby"
+var statusText = ""
 
 var search_icon_base
 
@@ -756,7 +783,7 @@ async function setup() {
 }
 
 function draw() {
-    background(28, 42, 53);
+    background(bwMode ? "#ffffff" : "#1c2a35");
     textAlign(CENTER, CENTER)
     for (const list of linkedLists) {
         list.draw();
@@ -767,12 +794,13 @@ function draw() {
 
     //iNode.draw()
 
-    stroke(BASE_BLUE)
-    fill(BASE_BLUE)
+    const cutColor = bwMode ? [0, 0, 0] : BASE_BLUE
+    stroke(cutColor)
+    fill(cutColor)
     line(windowWidth - pageCutX, 0, windowWidth - pageCutX, windowHeight)
     text("CUT", windowWidth - pageCutX + 20, 20)
 
-    fill(WHITE)
+    fill(bwMode ? 0 : 255)
     textAlign(LEFT, TOP)
     text(statusText, 10, 10)
 }
