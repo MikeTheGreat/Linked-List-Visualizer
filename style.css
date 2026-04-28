@@ -343,3 +343,25 @@ p {
 .bump-left {
     margin-left: 15px;
 }
+
+#altTextPanel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 560px;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 12px 15px;
+    background-color: rgba(23, 30, 36, 0.92);
+    color: #c8d4de;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    line-height: 1.7;
+    box-sizing: border-box;
+    z-index: 10;
+    user-select: text;
+    -webkit-user-select: text;
+    border-left: 1px solid #29597e;
+    white-space: pre-wrap;
+    word-break: break-word;
+}

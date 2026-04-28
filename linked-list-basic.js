@@ -507,6 +507,7 @@ function handleAdj() {
     for (const list of linkedLists) {
         list.adjustAtNodeForward(list.head)
     }
+    positionAltTextPanel()
 }
 
 function getSelectedList() {
@@ -565,6 +566,7 @@ function addVar(label) {
     relayoutLinkedLists()
     refreshHeadNodePicker()
     document.getElementById("headNodePicker").value = trimmedLabel
+    updateAltText()
     return true
 }
 
@@ -583,6 +585,7 @@ function enableButtonControls() {
         button.disabled = false
     }
     statusText = ""
+    updateAltText()
 }
 
 document.getElementById("animSlider").innerHTML = document.getElementById("myRange").value
@@ -743,6 +746,130 @@ function handleBwToggle() {
     document.getElementById("bwToggleBtn").textContent = bwMode ? "Color" : "B&W"
 }
 
+function generateAltText() {
+    if (linkedLists.length === 0) {
+        return "No linked lists defined.";
+    }
+
+    const count = linkedLists.length;
+
+    function joinLabels(lists) {
+        if (lists.length === 1) return `"${lists[0].label}"`;
+        if (lists.length === 2) return `"${lists[0].label}" and "${lists[1].label}"`;
+        return lists.slice(0, -1).map(l => `"${l.label}"`).join(', ') + `, and "${lists[lists.length - 1].label}"`;
+    }
+
+    function ordinalWord(n) {
+        if (n >= 1 && n <= 10) {
+            return ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"][n - 1];
+        }
+        const mod100 = n % 100;
+        const mod10 = n % 10;
+        if (mod100 >= 11 && mod100 <= 13) return `${n}th`;
+        if (mod10 === 1) return `${n}st`;
+        if (mod10 === 2) return `${n}nd`;
+        if (mod10 === 3) return `${n}rd`;
+        return `${n}th`;
+    }
+
+    function countNodes(head) {
+        let c = 0, hasEllipsis = false;
+        for (let n = head; n; n = n.next) {
+            if (n.value === "...") hasEllipsis = true;
+            c++;
+        }
+        return { c, hasEllipsis };
+    }
+
+    const intro = count === 1
+        ? `There is 1 linked list, headed by ${joinLabels(linkedLists)}.`
+        : `There are ${count} linked lists, headed by ${joinLabels(linkedLists)}.`;
+
+    const sections = [intro];
+
+    for (const list of linkedLists) {
+        const label = list.label;
+        const sentences = [];
+
+        if (list.head === null) {
+            sentences.push(`The "${label}" variable is the head of an empty list (it points to null).`);
+        } else {
+            const { c: nodeCount, hasEllipsis } = countNodes(list.head);
+
+            if (hasEllipsis) {
+                sentences.push(`The "${label}" variable is the head of a list containing an unknown number of nodes.`);
+            } else if (nodeCount === 1) {
+                sentences.push(`The "${label}" variable is the head of a 1-node list.`);
+            } else {
+                sentences.push(`The "${label}" variable is the head of a ${nodeCount}-node list.`);
+            }
+
+            let current = list.head;
+            let i = 1;
+            let usePositional = true;
+            let afterEllipsis = false;
+
+            while (current !== null) {
+                const isLast = current.next === null;
+                const isEllipsis = current.value === "...";
+
+                if (afterEllipsis) {
+                    if (isEllipsis) {
+                        sentences.push(`An arrow from that ellipsis leads to another ellipsis, again indicating an unknown number of additional nodes.`);
+                    } else if (isLast) {
+                        sentences.push(`An arrow from the ellipsis leads to the last node, which contains "${current.value}"; its next pointer is null.`);
+                        afterEllipsis = false;
+                    } else {
+                        sentences.push(`An arrow from the ellipsis leads to a node containing "${current.value}".`);
+                        afterEllipsis = false;
+                    }
+                } else if (isEllipsis) {
+                    sentences.push(`That node is followed by an ellipsis, indicating an unknown number of additional nodes (note that there may be zero additional nodes, one additional node, or many additional nodes).`);
+                    usePositional = false;
+                    afterEllipsis = true;
+                    i++;
+                } else if (nodeCount === 1) {
+                    sentences.push(`The only node contains "${current.value}"; its next pointer is null.`);
+                } else if (usePositional) {
+                    if (isLast) {
+                        sentences.push(`The ${ordinalWord(i)} (last) node contains "${current.value}"; its next pointer is null.`);
+                    } else {
+                        sentences.push(`The ${ordinalWord(i)} node contains "${current.value}".`);
+                    }
+                    i++;
+                } else {
+                    if (isLast) {
+                        sentences.push(`The next (and last) node contains "${current.value}"; its next pointer is null.`);
+                    } else {
+                        sentences.push(`The next node contains "${current.value}".`);
+                    }
+                }
+
+                current = current.next;
+            }
+        }
+
+        sections.push(sentences.join(' '));
+    }
+
+    return sections.join('\n\n');
+}
+
+function updateAltText() {
+    const panel = document.getElementById("altTextPanel");
+    if (panel) {
+        panel.innerText = generateAltText();
+    }
+}
+
+function positionAltTextPanel() {
+    const panel = document.getElementById("altTextPanel");
+    if (!panel) return;
+    const ctrlHeight = document.getElementById("controlMain").offsetHeight;
+    panel.style.top = ctrlHeight + "px";
+    panel.style.width = (pageCutX - 40) + "px";
+}
+
 var linkedLists = []
 var iNode = new indexNode()
 var sNode
@@ -770,6 +897,7 @@ async function setup() {
     sNode = new searchNode()
 
     addVar("H")
+    positionAltTextPanel()
 
     rectMode(CENTER)
     textAlign(CENTER, CENTER)
@@ -825,6 +953,7 @@ function mousePressed() {
 function windowResized() {
     controlsHeight = document.getElementById("controlMain").offsetHeight
     resizeCanvas(windowWidth, windowHeight - controlsHeight)
+    positionAltTextPanel()
 }
 
 
