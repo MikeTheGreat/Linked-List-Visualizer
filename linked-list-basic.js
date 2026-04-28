@@ -419,30 +419,39 @@ class Node {
         const dataCellWidth = getCellWidth(this.value)
         const ink = bwMode ? 0 : 255
         const [cr, cg, cb] = bwMode ? [255, 255, 255] : this.color
+        const isEllipsis = this.value === "..."
 
-        // Labels above cells
-        noStroke()
-        fill(ink)
-        textSize(10)
-        text("data", this.x + dataCellWidth / 2, this.y - 10)
-        text("next", this.x + dataCellWidth + boxSize / 2, this.y - 10)
-        textSize(12)
-
-        strokeWeight(1)
-        stroke(28, 42, 53)
-        fill(cr, cg, cb)
-        rect(this.x + dataCellWidth / 2, this.y + boxSize / 2, dataCellWidth, boxSize)
-        rect(this.x + dataCellWidth + boxSize / 2, this.y + boxSize / 2, boxSize, boxSize)
-        noStroke()
-        fill(ink)
-        text(this.value, this.x + dataCellWidth / 2, this.y + boxSize / 2)
-
-        if (this.next == null) {
+        if (isEllipsis) {
+            noStroke()
+            fill(ink)
+            textSize(24)
+            text("...", this.x + (dataCellWidth + boxSize) / 2, this.y + boxSize / 2)
+            textSize(12)
+        } else {
+            // Labels above cells
             noStroke()
             fill(ink)
             textSize(10)
-            text("null", this.x + dataCellWidth + boxSize / 2, this.y + boxSize / 2)
+            text("data", this.x + dataCellWidth / 2, this.y - 10)
+            text("next", this.x + dataCellWidth + boxSize / 2, this.y - 10)
             textSize(12)
+
+            strokeWeight(1)
+            stroke(28, 42, 53)
+            fill(cr, cg, cb)
+            rect(this.x + dataCellWidth / 2, this.y + boxSize / 2, dataCellWidth, boxSize)
+            rect(this.x + dataCellWidth + boxSize / 2, this.y + boxSize / 2, boxSize, boxSize)
+            noStroke()
+            fill(ink)
+            text(this.value, this.x + dataCellWidth / 2, this.y + boxSize / 2)
+
+            if (this.next == null) {
+                noStroke()
+                fill(ink)
+                textSize(10)
+                text("null", this.x + dataCellWidth + boxSize / 2, this.y + boxSize / 2)
+                textSize(12)
+            }
         }
 
         if (this.next != null) {
