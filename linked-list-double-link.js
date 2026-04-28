@@ -74,10 +74,19 @@ class searchNode {
   constructor() {
     this.x = -100
     this.y = posYinit
-    this.image = search_icon_base
   }
   draw() {
-    image(this.image, this.x, this.y, 40, 40);
+    if (search_icon_base) {
+      image(search_icon_base, this.x, this.y, 40, 40);
+      return;
+    }
+
+    // Fallback icon for local file:// runs where image fetches can fail.
+    noFill();
+    stroke(255);
+    strokeWeight(2);
+    ellipse(this.x + 16, this.y + 16, 16, 16);
+    line(this.x + 22, this.y + 22, this.x + 30, this.y + 30);
   }
 
   async movePos(newX, newY) {
@@ -523,15 +532,22 @@ var sNode
 var statusText = "Standby"
 
 var search_icon_base
-function preload() {
-  search_icon_base = loadImage('assets/search_1.png');
-}
 
 async function setup() {
   //createCanvas(400, 400);
   let cnv = createCanvas(windowWidth, windowHeight - controlsHeight);
   cnv.parent("sketchHolder");
   console.log(cnv)
+
+  loadImage(
+    'assets/search_1.png',
+    (img) => {
+      search_icon_base = img;
+    },
+    () => {
+      search_icon_base = null;
+    }
+  );
 
   sNode = new searchNode()
 

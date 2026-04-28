@@ -144,6 +144,20 @@ form {
   margin: 3px;
 }
 
+.select_field {
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: normal;
+  padding: 10px;
+  width: 55px;
+  margin: 3px;
+}
+
 .num_field {
   border: none;
   color: white;
@@ -283,6 +297,10 @@ p {
 
 .orange-color {
   background-color: #7e5729;
+}
+
+.head-color {
+  background-color: #b0803e;
 }
 
 .yellow-color {
