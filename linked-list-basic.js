@@ -915,11 +915,34 @@ function generateAltText() {
         return { c, hasEllipsis };
     }
 
+    function formatListContents(head) {
+        if (head === null) return '{}';
+        const values = [];
+        for (let cur = head; cur; cur = cur.next) values.push(String(cur.value));
+        let result = '';
+        for (let i = 0; i < values.length; i++) {
+            const v = values[i];
+            if (i === 0)                    result += v;
+            else if (v === '...')           result += ' ... ';
+            else if (values[i - 1] === '...') result += v;
+            else                            result += ', ' + v;
+        }
+        return '{' + result + '}';
+    }
+
+    const contentStrings = linkedLists.map(l => formatListContents(l.head));
+    const contentsJoined = count === 1
+        ? contentStrings[0]
+        : count === 2
+            ? `${contentStrings[0]} and ${contentStrings[1]}`
+            : contentStrings.slice(0, -1).join(', ') + ', and ' + contentStrings[count - 1];
+    const title = `A picture of ${count} list${count !== 1 ? 's' : ''} - ${contentsJoined}`;
+
     const intro = count === 1
         ? `There is 1 linked list, headed by ${joinLabels(linkedLists)}.`
         : `There are ${count} linked lists, headed by ${joinLabels(linkedLists)}.`;
 
-    const sections = [intro];
+    const sections = [title, intro];
 
     for (const list of linkedLists) {
         const label = list.label;
