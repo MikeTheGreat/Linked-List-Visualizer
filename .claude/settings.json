@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/mike/.cache/**)",
+      "Read(//home/mike/.npm/**)"
+    ]
+  }
+}

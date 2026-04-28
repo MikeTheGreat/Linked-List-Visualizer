@@ -320,6 +320,20 @@ p {
     background-color: #b0803e;
 }
 
+.head-picker {
+    display: inline-flex;
+    align-items: center;
+}
+
+.picker-btn {
+    opacity: 0.55;
+}
+
+.picker-btn-active {
+    opacity: 1;
+    text-decoration: underline;
+}
+
 .yellow-color {
     background-color: #797e29;
 }

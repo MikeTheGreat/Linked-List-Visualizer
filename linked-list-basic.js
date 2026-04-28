@@ -510,35 +510,32 @@ function handleAdj() {
     positionAltTextPanel()
 }
 
-function getSelectedList() {
-    if (!linkedLists.length) {
-        return null;
-    }
+var selectedListLabel = ""
 
-    const picker = document.getElementById("headNodePicker")
-    const selectedLabel = picker.value
-    const selectedList = linkedLists.find((list) => list.label === selectedLabel)
-    return selectedList || linkedLists[0]
+function getSelectedList() {
+    if (!linkedLists.length) return null
+    return linkedLists.find((list) => list.label === selectedListLabel) || linkedLists[0]
+}
+
+function selectList(label) {
+    selectedListLabel = label
+    refreshHeadNodePicker()
+    statusText = "Selected: " + label
+    updateAltText()
 }
 
 function refreshHeadNodePicker() {
     const picker = document.getElementById("headNodePicker")
-    const previousValue = picker.value
     picker.innerHTML = ""
 
     for (const list of linkedLists) {
-        const option = document.createElement("option")
-        option.value = list.label
-        option.textContent = list.label
-        picker.appendChild(option)
+        const btn = document.createElement("button")
+        btn.textContent = list.label
+        btn.className = "buttonControls head-color picker-btn" +
+            (list.label === selectedListLabel ? " picker-btn-active" : "")
+        btn.onclick = () => selectList(list.label)
+        picker.appendChild(btn)
     }
-
-    if (!linkedLists.length) {
-        return
-    }
-
-    const hasPrevious = linkedLists.some((list) => list.label === previousValue)
-    picker.value = hasPrevious ? previousValue : linkedLists[0].label
 }
 
 function relayoutLinkedLists() {
@@ -564,8 +561,8 @@ function addVar(label) {
     const list = new LinkedList(trimmedLabel, linkedLists.length)
     linkedLists.push(list)
     relayoutLinkedLists()
+    selectedListLabel = trimmedLabel
     refreshHeadNodePicker()
-    document.getElementById("headNodePicker").value = trimmedLabel
     updateAltText()
     return true
 }
@@ -630,6 +627,7 @@ async function handleDeleteVar() {
     const removedLabel = list.label
     linkedLists = linkedLists.filter((item) => item !== list)
     relayoutLinkedLists()
+    if (linkedLists.length) selectedListLabel = linkedLists[0].label
     refreshHeadNodePicker()
     statusText = "Deleted var: " + removedLabel
     enableButtonControls()
