@@ -38,7 +38,7 @@
         <div id="controlPanel" class="controlsParent">
             <div class="controls">
                 <select id="headNodePicker" class="select_field head-color">
-                    <option value="H">H</option>
+                    <option value="list">list</option>
                 </select>
                 <input type="text" id="varNameInput" placeholder="String" class="input_field head-color"></input>
                 <button onClick=handleAddVar() class="buttonControls head-color">Add var</button>
@@ -71,6 +71,7 @@
                     class="slider" id="myRange">
                 <p class="controlsTitle" id=animSlider></p>
                 <button class="buttonControls bump-left" id="bwToggleBtn" onclick="handleBwToggle()">B&amp;W</button>
+                <button class="buttonControls" onclick="handleCopyAsSVG()">Copy as SVG</button>
             </div>
         </div>
         <div class="selectionParent">

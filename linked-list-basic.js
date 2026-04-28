@@ -746,6 +746,140 @@ function handleBwToggle() {
     document.getElementById("bwToggleBtn").textContent = bwMode ? "Color" : "B&W"
 }
 
+function generateSVG() {
+    const ink        = bwMode ? '#000000' : '#ffffff';
+    const bg         = bwMode ? '#ffffff' : '#1c2a35';
+    const cellFill   = bwMode ? '#ffffff' : '#29597e';
+    const headFill   = bwMode ? '#ffffff' : '#b0803e';
+    const border     = '#1c2a35';
+
+    // Measure text width independently of p5's canvas state
+    const _measureCtx = document.createElement('canvas').getContext('2d');
+    function cellWidth(value) {
+        _measureCtx.font = '12px "Open Sans", sans-serif';
+        return Math.max(boxSize, _measureCtx.measureText(String(value)).width + textCellPadding * 2);
+    }
+
+    function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // rectMode(CENTER): cx/cy are center coords
+    function svgRect(cx, cy, w, h, fill) {
+        return `<rect x="${cx - w/2}" y="${cy - h/2}" width="${w}" height="${h}" fill="${fill}" stroke="${border}" stroke-width="1"/>`;
+    }
+
+    function svgText(content, cx, cy, size, fill) {
+        return `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="'Open Sans',sans-serif" font-size="${size}" fill="${fill}">${esc(content)}</text>`;
+    }
+
+    function svgArrow(x1, y1, x2, y2) {
+        return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${ink}" stroke-width="1" marker-end="url(#arr)"/>`;
+    }
+
+    if (linkedLists.length === 0) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60"><rect width="200" height="60" fill="${bg}"/>${svgText('No lists', 100, 30, 12, ink)}</svg>`;
+    }
+
+    // Compute bounding box across all lists and nodes
+    let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+    for (const list of linkedLists) {
+        bx0 = Math.min(bx0, list.x);
+        by0 = Math.min(by0, list.y - 25);
+        bx1 = Math.max(bx1, list.x + boxSize);
+        by1 = Math.max(by1, list.y + boxSize);
+        for (let cur = list.head; cur; cur = cur.next) {
+            const dw = cellWidth(cur.value);
+            bx0 = Math.min(bx0, cur.x);
+            by0 = Math.min(by0, cur.y - 25);
+            bx1 = Math.max(bx1, cur.x + dw + boxSize);
+            by1 = Math.max(by1, cur.y + boxSize);
+        }
+    }
+
+    const pad = 20;
+    const W = bx1 - bx0 + pad * 2;
+    const H = by1 - by0 + pad * 2;
+    const vx = bx0 - pad;
+    const vy = by0 - pad;
+
+    const parts = [];
+    parts.push(`<rect x="${vx}" y="${vy}" width="${W}" height="${H}" fill="${bg}"/>`);
+
+    for (const list of linkedLists) {
+        // Variable label above pointer cell
+        parts.push(svgText(list.label, list.x + boxSize/2, list.y - 10, 12, ink));
+
+        // Pointer cell
+        parts.push(svgRect(list.x + boxSize/2, list.y + boxSize/2, boxSize, boxSize, headFill));
+
+        // Arrow from pointer cell to head
+        if (list.head !== null) {
+            parts.push(svgArrow(
+                list.x + boxSize, list.y + list.offsetY,
+                list.head.x,     list.head.y + list.head.offsetY
+            ));
+        }
+
+        // Nodes
+        for (let cur = list.head; cur; cur = cur.next) {
+            const dw = cellWidth(cur.value);
+            const nx = cur.x, ny = cur.y;
+            const isEllipsis = cur.value === '...';
+
+            if (isEllipsis) {
+                parts.push(svgText('...', nx + (dw + boxSize)/2, ny + boxSize/2, 24, ink));
+            } else {
+                // "data" / "next" labels above cells
+                parts.push(svgText('data', nx + dw/2,          ny - 10, 10, ink));
+                parts.push(svgText('next', nx + dw + boxSize/2, ny - 10, 10, ink));
+
+                // Data cell and next cell
+                parts.push(svgRect(nx + dw/2,          ny + boxSize/2, dw,      boxSize, cellFill));
+                parts.push(svgRect(nx + dw + boxSize/2, ny + boxSize/2, boxSize, boxSize, cellFill));
+
+                // Value text and null/arrow in next cell
+                parts.push(svgText(cur.value, nx + dw/2, ny + boxSize/2, 12, ink));
+                if (cur.next === null) {
+                    parts.push(svgText('null', nx + dw + boxSize/2, ny + boxSize/2, 10, ink));
+                }
+            }
+
+            // Arrow to next node
+            if (cur.next !== null) {
+                parts.push(svgArrow(
+                    nx + dw + boxSize,        ny + cur.offsetY,
+                    cur.next.x, cur.next.y + cur.next.offsetY
+                ));
+            }
+        }
+    }
+
+    const defs = `<defs><marker id="arr" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="${ink}"/></marker></defs>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${vx} ${vy} ${W} ${H}">\n${defs}\n${parts.join('\n')}\n</svg>`;
+}
+
+async function handleCopyAsSVG() {
+    const svg  = generateSVG();
+    const html = `<!DOCTYPE html><html><body>${svg}</body></html>`;
+    try {
+        await navigator.clipboard.write([
+            new ClipboardItem({
+                'text/html':  new Blob([html], { type: 'text/html' }),
+                'text/plain': new Blob([svg],  { type: 'text/plain' })
+            })
+        ]);
+        statusText = "SVG copied to clipboard";
+    } catch (e) {
+        try {
+            await navigator.clipboard.writeText(svg);
+            statusText = "SVG copied as text";
+        } catch (e2) {
+            statusText = "Copy failed";
+        }
+    }
+}
+
 function generateAltText() {
     if (linkedLists.length === 0) {
         return "No linked lists defined.";
@@ -896,7 +1030,7 @@ async function setup() {
 
     sNode = new searchNode()
 
-    addVar("H")
+    addVar("list")
     positionAltTextPanel()
 
     rectMode(CENTER)
