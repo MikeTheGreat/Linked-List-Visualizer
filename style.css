@@ -376,6 +376,35 @@ p {
     user-select: text;
     -webkit-user-select: text;
     border-left: 1px solid #29597e;
+}
+
+#altTextHeader {
+    position: sticky;
+    top: -12px;
+    margin: -12px -15px 10px -15px;
+    padding: 8px 10px;
+    background-color: rgba(23, 30, 36, 0.98);
+    display: flex;
+    justify-content: flex-end;
+    border-bottom: 1px solid #29597e;
+    z-index: 1;
+}
+
+#copyAltTextBtn {
+    font-size: 13px;
+    padding: 7px 16px;
+    background-color: #29597e;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+}
+
+#copyAltTextBtn:hover {
+    background-color: #3e83b0;
+}
+
+#altTextContent {
     white-space: pre-wrap;
     word-break: break-word;
 }

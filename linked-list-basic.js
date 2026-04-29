@@ -1,7 +1,7 @@
 var animSpeed = 4
 const easing = 0.05 * animSpeed
 const boxSize = 35;
-const varHeadSpacing = 140;
+const varHeadSpacing = 70;
 const textCellPadding = 10;
 
 const headXinit = 30;
@@ -151,6 +151,14 @@ class LinkedList {
         stroke(28, 42, 53)
         fill(cr, cg, cb)
         rect(this.x + boxSize / 2, this.y + boxSize / 2, boxSize, boxSize)
+
+        if (this.head === null) {
+            noStroke()
+            fill(ink)
+            textSize(10)
+            text("null", this.x + boxSize / 2, this.y + boxSize / 2)
+            textSize(12)
+        }
 
         //LINE
         if (this.head != null) {
@@ -1011,9 +1019,28 @@ function generateAltText() {
 }
 
 function updateAltText() {
-    const panel = document.getElementById("altTextPanel");
-    if (panel) {
-        panel.innerText = generateAltText();
+    const content = document.getElementById("altTextContent");
+    if (content) {
+        content.innerText = generateAltText();
+    }
+}
+
+async function handleCopyAltText() {
+    const text = generateAltText();
+    try {
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById("copyAltTextBtn");
+        const orig = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+    } catch (e) {
+        // fallback for file:// context
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
     }
 }
 
