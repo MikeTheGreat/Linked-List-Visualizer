@@ -358,29 +358,32 @@ p {
     margin-left: 15px;
 }
 
-#altTextPanel {
+#rightPanel {
     position: fixed;
     right: 0;
     top: 0;
-    width: 560px;
     bottom: 0;
+    width: 560px;
     overflow-y: auto;
-    padding: 12px 15px;
     background-color: rgba(23, 30, 36, 0.92);
+    border-left: 1px solid #29597e;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+#altTextPanel {
+    padding: 12px 15px;
     color: #c8d4de;
     font-family: 'Open Sans', sans-serif;
     font-size: 12px;
     line-height: 1.7;
-    box-sizing: border-box;
-    z-index: 10;
     user-select: text;
     -webkit-user-select: text;
-    border-left: 1px solid #29597e;
 }
 
 #altTextHeader {
     position: sticky;
-    top: -12px;
+    top: 0;
     margin: -12px -15px 10px -15px;
     padding: 8px 10px;
     background-color: rgba(23, 30, 36, 0.98);
@@ -410,20 +413,13 @@ p {
 }
 
 #instructionsPanel {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    width: 560px;
     padding: 12px 15px;
-    background-color: rgba(23, 30, 36, 0.96);
     color: #c8d4de;
     font-family: 'Open Sans', sans-serif;
     font-size: 12px;
     line-height: 1.7;
-    box-sizing: border-box;
-    z-index: 11;
-    border-left: 1px solid #29597e;
     border-top: 1px solid #29597e;
+    background-color: rgba(23, 30, 36, 0.96);
 }
 
 #instructionsPanel h3 {

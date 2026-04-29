@@ -95,24 +95,27 @@
     </div>
     <script src="linked-list-basic.js"></script>
     <div id="sketchHolder"></div>
-    <div id="altTextPanel">
-        <div id="altTextHeader">
-            <button id="copyAltTextBtn" onclick="handleCopyAltText()">Copy Alt Text</button>
+    <div id="rightPanel">
+        <div id="altTextPanel">
+            <div id="altTextHeader">
+                <button id="copyAltTextBtn" onclick="handleCopyAltText()">Copy Alt Text</button>
+            </div>
+            <div id="altTextContent"></div>
         </div>
-        <div id="altTextContent"></div>
-    </div>
-    <div id="instructionsPanel">
-        <h3>Tips</h3>
-        <ul>
-            <li><code>...</code> is a special node value that renders as an ellipsis placeholder node.</li>
-            <li>The <strong>Load</strong> button reads the variable name field as a serialized list definition and
-                replaces all current lists. Format: <code>name:{val1,val2,...}</code>
-                <ul>
-                    <li><code>list:{1,2,3} list2:{6,7} list3:{}</code> — creates three lists; the third is empty.</li>
-                    <li><code>head:{A,B,...,Z}</code> — creates one list with an ellipsis node between B and Z.</li>
-                </ul>
-            </li>
-        </ul>
+        <div id="instructionsPanel">
+            <h3>Tips</h3>
+            <ul>
+                <li><code>...</code> is a special node value that renders as an ellipsis placeholder node.</li>
+                <li>The <strong>Load</strong> button reads the variable name field as a serialized list definition and
+                    replaces all current lists. Format: <code>name:{val1,val2,...}</code>
+                    <ul>
+                        <li><code>list:{1,2,3} list2:{6,7} list3:{}</code> — creates three lists; the third is empty.
+                        </li>
+                        <li><code>head:{A,B,...,Z}</code> — creates one list with an ellipsis node between B and Z.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </body>
 

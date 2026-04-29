@@ -838,11 +838,11 @@ function handleBwToggle() {
 }
 
 function generateSVG() {
-    const ink        = bwMode ? '#000000' : '#ffffff';
-    const bg         = bwMode ? '#ffffff' : '#1c2a35';
-    const cellFill   = bwMode ? '#ffffff' : '#29597e';
-    const headFill   = bwMode ? '#ffffff' : '#b0803e';
-    const border     = '#1c2a35';
+    const ink = bwMode ? '#000000' : '#ffffff';
+    const bg = bwMode ? '#ffffff' : '#1c2a35';
+    const cellFill = bwMode ? '#ffffff' : '#29597e';
+    const headFill = bwMode ? '#ffffff' : '#b0803e';
+    const border = '#1c2a35';
 
     // Measure text width independently of p5's canvas state
     const _measureCtx = document.createElement('canvas').getContext('2d');
@@ -857,7 +857,7 @@ function generateSVG() {
 
     // rectMode(CENTER): cx/cy are center coords
     function svgRect(cx, cy, w, h, fill) {
-        return `<rect x="${cx - w/2}" y="${cy - h/2}" width="${w}" height="${h}" fill="${fill}" stroke="${border}" stroke-width="1"/>`;
+        return `<rect x="${cx - w / 2}" y="${cy - h / 2}" width="${w}" height="${h}" fill="${fill}" stroke="${border}" stroke-width="1"/>`;
     }
 
     function svgText(content, cx, cy, size, fill) {
@@ -899,16 +899,16 @@ function generateSVG() {
 
     for (const list of linkedLists) {
         // Variable label above pointer cell
-        parts.push(svgText(list.label, list.x + boxSize/2, list.y - 10, 12, ink));
+        parts.push(svgText(list.label, list.x + boxSize / 2, list.y - 10, 12, ink));
 
         // Pointer cell
-        parts.push(svgRect(list.x + boxSize/2, list.y + boxSize/2, boxSize, boxSize, headFill));
+        parts.push(svgRect(list.x + boxSize / 2, list.y + boxSize / 2, boxSize, boxSize, headFill));
 
         // Arrow from pointer cell to head
         if (list.head !== null) {
             parts.push(svgArrow(
                 list.x + boxSize, list.y + list.offsetY,
-                list.head.x,     list.head.y + list.head.offsetY
+                list.head.x, list.head.y + list.head.offsetY
             ));
         }
 
@@ -919,27 +919,27 @@ function generateSVG() {
             const isEllipsis = cur.value === '...';
 
             if (isEllipsis) {
-                parts.push(svgText('...', nx + (dw + boxSize)/2, ny + boxSize/2, 24, ink));
+                parts.push(svgText('...', nx + (dw + boxSize) / 2, ny + boxSize / 2, 24, ink));
             } else {
                 // "data" / "next" labels above cells
-                parts.push(svgText('data', nx + dw/2,          ny - 10, 10, ink));
-                parts.push(svgText('next', nx + dw + boxSize/2, ny - 10, 10, ink));
+                parts.push(svgText('data', nx + dw / 2, ny - 10, 10, ink));
+                parts.push(svgText('next', nx + dw + boxSize / 2, ny - 10, 10, ink));
 
                 // Data cell and next cell
-                parts.push(svgRect(nx + dw/2,          ny + boxSize/2, dw,      boxSize, cellFill));
-                parts.push(svgRect(nx + dw + boxSize/2, ny + boxSize/2, boxSize, boxSize, cellFill));
+                parts.push(svgRect(nx + dw / 2, ny + boxSize / 2, dw, boxSize, cellFill));
+                parts.push(svgRect(nx + dw + boxSize / 2, ny + boxSize / 2, boxSize, boxSize, cellFill));
 
                 // Value text and null/arrow in next cell
-                parts.push(svgText(cur.value, nx + dw/2, ny + boxSize/2, 12, ink));
+                parts.push(svgText(cur.value, nx + dw / 2, ny + boxSize / 2, 12, ink));
                 if (cur.next === null) {
-                    parts.push(svgText('null', nx + dw + boxSize/2, ny + boxSize/2, 10, ink));
+                    parts.push(svgText('null', nx + dw + boxSize / 2, ny + boxSize / 2, 10, ink));
                 }
             }
 
             // Arrow to next node
             if (cur.next !== null) {
                 parts.push(svgArrow(
-                    nx + dw + boxSize,        ny + cur.offsetY,
+                    nx + dw + boxSize, ny + cur.offsetY,
                     cur.next.x, cur.next.y + cur.next.offsetY
                 ));
             }
@@ -951,13 +951,13 @@ function generateSVG() {
 }
 
 async function handleCopyAsSVG() {
-    const svg  = generateSVG();
+    const svg = generateSVG();
     const html = `<!DOCTYPE html><html><body>${svg}</body></html>`;
     try {
         await navigator.clipboard.write([
             new ClipboardItem({
-                'text/html':  new Blob([html], { type: 'text/html' }),
-                'text/plain': new Blob([svg],  { type: 'text/plain' })
+                'text/html': new Blob([html], { type: 'text/html' }),
+                'text/plain': new Blob([svg], { type: 'text/plain' })
             })
         ]);
         statusText = "SVG copied to clipboard";
@@ -1013,10 +1013,10 @@ function generateAltText() {
         let result = '';
         for (let i = 0; i < values.length; i++) {
             const v = values[i];
-            if (i === 0)                    result += v;
-            else if (v === '...')           result += ' ... ';
+            if (i === 0) result += v;
+            else if (v === '...') result += ' ... ';
             else if (values[i - 1] === '...') result += v;
-            else                            result += ', ' + v;
+            else result += ', ' + v;
         }
         return '{' + result + '}';
     }
@@ -1130,7 +1130,7 @@ async function handleCopyAltText() {
 }
 
 function positionAltTextPanel() {
-    const panel = document.getElementById("altTextPanel");
+    const panel = document.getElementById("rightPanel");
     if (!panel) return;
     const ctrlHeight = document.getElementById("controlMain").offsetHeight;
     panel.style.top = ctrlHeight + "px";
