@@ -408,3 +408,43 @@ p {
     white-space: pre-wrap;
     word-break: break-word;
 }
+
+#instructionsPanel {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 560px;
+    padding: 12px 15px;
+    background-color: rgba(23, 30, 36, 0.96);
+    color: #c8d4de;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    line-height: 1.7;
+    box-sizing: border-box;
+    z-index: 11;
+    border-left: 1px solid #29597e;
+    border-top: 1px solid #29597e;
+}
+
+#instructionsPanel h3 {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    color: #8ab4d4;
+}
+
+#instructionsPanel ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+#instructionsPanel li {
+    margin-bottom: 4px;
+}
+
+#instructionsPanel code {
+    background-color: rgba(41, 89, 126, 0.4);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    color: #e0eaf2;
+}

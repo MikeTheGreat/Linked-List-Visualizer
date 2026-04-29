@@ -623,6 +623,91 @@ function handleAddVar() {
     statusText = "Added var: " + varName.trim()
 }
 
+function parseLists(input) {
+    const results = [];
+    const regex = /(\w+)\s*:\s*\{([^}]*)\}/g;
+    let match;
+    while ((match = regex.exec(input)) !== null) {
+        const name = match[1];
+        const valuesStr = match[2].trim();
+        const values = valuesStr === '' ? [] : valuesStr.split(',').map(v => v.trim()).filter(v => v !== '');
+        results.push({ name, values });
+    }
+    return results;
+}
+
+function handleLoadLists() {
+    const input = document.getElementById("varNameInput").value.trim();
+    if (!input) {
+        statusText = "Enter list definitions in the var name field";
+        return;
+    }
+
+    const parsed = parseLists(input);
+    if (parsed.length === 0) {
+        statusText = "Could not parse any list definitions";
+        return;
+    }
+
+    linkedLists = [];
+
+    for (let i = 0; i < parsed.length; i++) {
+        const { name, values } = parsed[i];
+        const list = new LinkedList(name, i);
+        linkedLists.push(list);
+
+        let prev = null;
+        for (const val of values) {
+            const node = new Node(val, -200, list.getNodeStartY());
+            list.nodes.push(node);
+            list.size++;
+            if (list.head === null) {
+                list.head = node;
+            } else {
+                prev.next = node;
+            }
+            prev = node;
+        }
+
+        // Position nodes directly without animation
+        let posX = list.getNodeStartX();
+        let posY = list.getNodeStartY();
+        let current = list.head;
+        while (current) {
+            if (posX + nodeDistX < windowWidth - pageCutX) {
+                current.x = posX;
+                current.y = posY;
+            } else {
+                posX = list.getNodeStartX();
+                posY += nodeDistY;
+                current.x = posX;
+                current.y = posY;
+            }
+            posX += nodeDistX;
+            current = current.next;
+        }
+
+        // Pre-set arrow endpoints so they render immediately without animation
+        current = list.head;
+        while (current) {
+            if (current.next) {
+                current.endx = current.next.x;
+                current.endy = current.next.y;
+            } else {
+                current.endx = current.x;
+                current.endy = current.y;
+            }
+            current = current.next;
+        }
+    }
+
+    selectedListLabel = linkedLists.length > 0 ? linkedLists[0].label : "";
+    refreshHeadNodePicker();
+    document.getElementById("varNameInput").value = "";
+    statusText = "Loaded " + parsed.length + " list(s)";
+    updateAltText();
+}
+
 async function handleDeleteVar() {
     disableButtonControls()
     const list = getSelectedList()

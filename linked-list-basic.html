@@ -40,6 +40,7 @@
                 <div id="headNodePicker" class="head-picker"></div>
                 <input type="text" id="varNameInput" placeholder="String" class="input_field head-color"></input>
                 <button onClick=handleAddVar() class="buttonControls head-color">Add var</button>
+                <button onClick=handleLoadLists() class="buttonControls head-color">Load</button>
                 <input type="text" id="functionElement" placeholder="Element" class="input_field blue-color"></input>
                 <button onClick=handleInsertAtTail() class="buttonControls blue-color">Insert Tail</button>
                 <button onClick=handleInsertAtHead() class="buttonControls blue-color">Insert Head</button>
@@ -99,6 +100,19 @@
             <button id="copyAltTextBtn" onclick="handleCopyAltText()">Copy Alt Text</button>
         </div>
         <div id="altTextContent"></div>
+    </div>
+    <div id="instructionsPanel">
+        <h3>Tips</h3>
+        <ul>
+            <li><code>...</code> is a special node value that renders as an ellipsis placeholder node.</li>
+            <li>The <strong>Load</strong> button reads the variable name field as a serialized list definition and
+                replaces all current lists. Format: <code>name:{val1,val2,...}</code>
+                <ul>
+                    <li><code>list:{1,2,3} list2:{6,7} list3:{}</code> — creates three lists; the third is empty.</li>
+                    <li><code>head:{A,B,...,Z}</code> — creates one list with an ellipsis node between B and Z.</li>
+                </ul>
+            </li>
+        </ul>
     </div>
 </body>
 
